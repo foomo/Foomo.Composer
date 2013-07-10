@@ -1,0 +1,13 @@
+{
+    "name": "foomo\/composer",
+    "type": "foomo-module",
+    "require": {
+
+    },
+    "license": "LGPL-3.0+",
+    "description": "composer integration \/ utilities",
+    "extra": {
+        "moduleName": "Foomo.Composer"
+    },
+    "target-dir": "Foomo.Composer"
+}
