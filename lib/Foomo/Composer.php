@@ -30,8 +30,16 @@ class Composer
 		$ret = array();
 		foreach(\Foomo\Modules\Manager::getEnabledModules() as $enabledModule) {
 			$filename = \Foomo\Config::getModuleDir($enabledModule) . DIRECTORY_SEPARATOR . 'composer.json';
-			$package = self::getPackageForModule($enabledModule);
-			file_put_contents($filename, json_encode($package->getValue(), JSON_PRETTY_PRINT));
+			$package = self::getPackageForModule($enabledModule)->getValue();
+			$overrideFilename = \Foomo\Config::getModuleDir($enabledModule) . DIRECTORY_SEPARATOR . 'composer-override.json';
+			if(file_exists($overrideFilename)) {
+				$overrides = json_decode(file_get_contents($overrideFilename));
+				self::applyOverrides($package, $overrides);
+			}
+			if(empty($package['require'])) {
+				$package['require'] = (object) array();
+			}
+			file_put_contents($filename, json_encode($package, JSON_PRETTY_PRINT));
 			$ret[$filename] = $package;
 		}
 		return $ret;
@@ -59,20 +67,42 @@ class Composer
 		}
 		return $package;
 	}
+	public static function applyOverrides(&$package, $overrides)
+	{
+		foreach($overrides as $key => $value) {
+			if(
+				!isset($package[$key]) ||
+				is_scalar($value) ||
+				(isset($package[$key]) && is_scalar($package[$key]))
+			) {
+				$package[$key] = $value;
+			} else if(
+				isset($package[$key]) &&
+				!is_scalar($package[$key]) &&
+				!is_scalar($value)
+			) {
+				self::applyOverrides($package[$key], $value);
+			}
+		}
+	}
 	public static function getModulePackageName($module)
 	{
-		$name = '';
-		$nameParts = explode('.', $module);
-		if(count($nameParts) > 1) {
-			array_walk(
-				$nameParts,
-				function(&$value, $index) {
-					$value = strtolower($value);
-				}
-			);
-			$name = array_shift($nameParts) . '/';
-			$name .= implode('-', $nameParts);
+		if($module == \Foomo\Module::NAME) {
+			return 'foomo/foomo';
+		} else {
+			$name = '';
+			$nameParts = explode('.', $module);
+			if(count($nameParts) > 1) {
+				array_walk(
+					$nameParts,
+					function(&$value, $index) {
+						$value = strtolower($value);
+					}
+				);
+				$name = array_shift($nameParts) . '/';
+				$name .= implode('-', $nameParts);
+			}
+			return $name;
 		}
-		return $name;
 	}
 }

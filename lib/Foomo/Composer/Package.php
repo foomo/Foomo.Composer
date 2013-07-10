@@ -43,7 +43,7 @@ class Package
 		$ret = (array) $this;
 		$ret['target-dir'] = $ret['targetDir'];
 		unset($ret['targetDir']);
-		$ret['require'] = (object) $ret['require'];
+		//$ret['require'] = (object) $ret['require'];
 		return $ret;
 	}
 

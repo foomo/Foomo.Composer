@@ -2,7 +2,7 @@
     "name": "foomo\/composer",
     "type": "foomo-module",
     "require": {
-
+        "foomo\/foomo": "0.3.0"
     },
     "license": "LGPL-3.0+",
     "description": "composer integration \/ utilities",

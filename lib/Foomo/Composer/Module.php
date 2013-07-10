@@ -85,7 +85,7 @@ class Module extends \Foomo\Modules\ModuleBase
 				break;
 			case 'all':
 				foreach(\Foomo\Composer::generatePackages() as $file => $package) {
-					$result->addEntry('wrote package definition for ' . $package->name . ' to ' . $file);
+					$result->addEntry('wrote package definition for ' . $package['name'] . ' to ' . $file);
 				}
 				break;
 		}
