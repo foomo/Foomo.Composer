@@ -51,7 +51,15 @@ class Composer
 			if(empty($package['require'])) {
 				$package['require'] = (object) array();
 			}
-			file_put_contents($filename, json_encode($package, JSON_PRETTY_PRINT));
+			$current = file_get_contents($filename);
+			if(defined('JSON_PRETTY_PRINT')) {
+				$new = json_encode($package, JSON_PRETTY_PRINT);
+			} else {
+				$new = json_encode($package);
+			}
+			if($current != $new) {
+				file_put_contents($filename, $new);
+			}
 			$ret[$filename] = $package;
 		}
 		return $ret;
